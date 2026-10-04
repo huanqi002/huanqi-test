@@ -1,15 +1,16 @@
 <?php
 require __DIR__ . '/../../general/config.php';
 require __DIR__ . '/../../general/user_profile.php';
-require __DIR__ . '/../../general/support_request.php';
+require __DIR__ . '/../../general/session.php';
 
 requireLogin();
 
-$requestId = isset($_GET['request_id']) ? (int)$_GET['request_id'] : 0;
-$request   = findSupportRequestById($conn, $requestId);
+$myId      = currentUser()['id'];
+$sessionId = isset($_GET['session_id']) ? (int)$_GET['session_id'] : 0;
+$session   = findSessionWithStatus($conn, $sessionId, 'Pending');
 
-if (!$request || $request['status'] !== 'Accepted') {
-    header('Location: index.php?err=' . urlencode('This request is not ready to be scheduled.'));
+if (!$session || ($session['user_id'] != $myId && $session['volunteer_id'] != $myId)) {
+    header('Location: index.php?err=' . urlencode('This session is not ready to be scheduled.'));
     exit;
 }
 
@@ -17,12 +18,15 @@ include __DIR__ . '/../../general/header.php';
 ?>
 
 <h1>Book a session</h1>
-<p class="subtitle"><?php echo htmlspecialchars($request['subject']); ?> &mdash;
-   Volunteer: <?php echo htmlspecialchars($request['volunteer_name']); ?></p>
+<p class="subtitle"><?php echo htmlspecialchars($session['category']); ?> &mdash;
+   Volunteer: <?php echo htmlspecialchars($session['volunteer_name']); ?></p>
+
+<?php if (isset($_GET['err'])): ?>
+<div class="message message-error"><?php echo htmlspecialchars($_GET['err']); ?></div>
+<?php endif; ?>
 
 <form id="scheduleForm" method="post" action="confirm_session.php">
-    <input type="hidden" name="request_id" value="<?php echo (int)$request['id']; ?>">
-    <input type="hidden" name="volunteer_id" value="<?php echo (int)$request['volunteer_id']; ?>">
+    <input type="hidden" name="session_id" value="<?php echo (int)$session['id']; ?>">
 
     <label for="session_date">Choose a date</label>
     <input type="date" id="session_date" name="session_date" min="<?php echo date('Y-m-d'); ?>" required>
@@ -36,8 +40,8 @@ include __DIR__ . '/../../general/header.php';
 
     <label>Choose how the session will happen</label>
     <div class="radio-group">
-        <label><input type="radio" name="mode" value="Online" checked> Online</label>
-        <label><input type="radio" name="mode" value="In-Person"> In-Person</label>
+        <label><input type="radio" name="mode" value="Online" <?php echo $session['support_mode'] !== 'Face-to-face' ? 'checked' : ''; ?>> Online</label>
+        <label><input type="radio" name="mode" value="Face-to-face" <?php echo $session['support_mode'] === 'Face-to-face' ? 'checked' : ''; ?>> Face-to-face</label>
     </div>
 
     <div class="btn-row">
@@ -48,7 +52,7 @@ include __DIR__ . '/../../general/header.php';
 
 <script src="../../../frontend/js/script.js"></script>
 <script>
-    initScheduleForm(<?php echo (int)$request['volunteer_id']; ?>);
+    initScheduleForm(<?php echo (int)$session['volunteer_id']; ?>);
 </script>
 
 <?php include __DIR__ . '/../../general/footer.php'; ?>

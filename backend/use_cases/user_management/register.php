@@ -5,16 +5,23 @@ require __DIR__ . '/../../general/user_profile.php';
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name  = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $role  = $_POST['role'] ?? '';
+    $name        = trim($_POST['name'] ?? '');
+    $email       = trim($_POST['email'] ?? '');
+    $university  = trim($_POST['university_name'] ?? '');
+    $password    = $_POST['password'] ?? '';
+    $isVolunteer = isset($_POST['is_volunteer']);
 
-    if ($name === '' || !in_array($role, ['student', 'volunteer'], true)) {
-        $errors[] = 'Please enter your name and choose a role.';
+    if ($name === '' || $university === '' || $password === '') {
+        $errors[] = 'Please fill in every field.';
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Please enter a valid email address.';
+    } elseif (emailExists($conn, $email)) {
+        $errors[] = 'An account with this email already exists.';
     }
 
     if (!$errors) {
-        $user = registerUser($conn, $name, $role, $email);
+        $user = registerUser($conn, $name, $email, $university, $password, $isVolunteer);
         loginAsUser($user);
         header('Location: ../support_request/index.php');
         exit;
@@ -45,13 +52,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="name">Name</label>
         <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>" required>
 
-        <label for="email">Email (optional)</label>
-        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
 
-        <label>I am a</label>
+        <label for="university_name">University</label>
+        <input type="text" id="university_name" name="university_name" value="<?php echo htmlspecialchars($_POST['university_name'] ?? ''); ?>" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+
         <div class="radio-group">
-            <label><input type="radio" name="role" value="student" <?php echo (($_POST['role'] ?? '') === 'student') ? 'checked' : ''; ?> required> Student</label>
-            <label><input type="radio" name="role" value="volunteer" <?php echo (($_POST['role'] ?? '') === 'volunteer') ? 'checked' : ''; ?>> Volunteer</label>
+            <label><input type="checkbox" name="is_volunteer" value="Y" <?php echo isset($_POST['is_volunteer']) ? 'checked' : ''; ?>> I also want to volunteer</label>
         </div>
 
         <div class="btn-row">

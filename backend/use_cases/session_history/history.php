@@ -20,13 +20,14 @@ include __DIR__ . '/../../general/header.php';
 
 <?php while ($r = $rows->fetch_assoc()): ?>
 <div class="card">
-    <span class="status status-<?php echo htmlspecialchars($r['request_status']); ?>"><?php echo htmlspecialchars($r['request_status']); ?></span>
-    <h3><?php echo htmlspecialchars($r['subject']); ?></h3>
-    <p class="meta">Student: <?php echo htmlspecialchars($r['student_name']); ?> &nbsp;|&nbsp; Volunteer: <?php echo htmlspecialchars($r['volunteer_name']); ?></p>
+    <?php $status = $r['session_status'] ?? $r['request_status']; // a session's status once the request has one ?>
+    <span class="status status-<?php echo htmlspecialchars($status); ?>"><?php echo htmlspecialchars($status); ?></span>
+    <h3><?php echo htmlspecialchars($r['category']); ?></h3>
+    <p class="meta">Student: <?php echo htmlspecialchars($r['student_name']); ?> &nbsp;|&nbsp; Volunteer: <?php echo htmlspecialchars($r['volunteer_name'] ?? 'Not assigned yet'); ?></p>
 
     <?php if ($r['session_date']): ?>
-        <p class="meta">Session: <?php echo htmlspecialchars($r['session_date']); ?> at <?php echo substr($r['session_time'],0,5); ?>
-           (<?php echo htmlspecialchars($r['mode']); ?>) &mdash; <?php echo htmlspecialchars($r['session_status']); ?></p>
+        <p class="meta">Session: <?php echo htmlspecialchars($r['session_date']); ?> at <?php echo substr($r['start_time'],0,5); ?>
+           (<?php echo htmlspecialchars($r['support_mode']); ?>) &mdash; <?php echo htmlspecialchars($r['session_status']); ?></p>
     <?php endif; ?>
 
     <?php if ($r['rating']): ?>

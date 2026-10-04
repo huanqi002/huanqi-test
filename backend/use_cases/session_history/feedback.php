@@ -2,8 +2,8 @@
 require __DIR__ . '/../../general/config.php';
 require __DIR__ . '/../../general/session.php';
 
-if (empty($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
-    header('Location: ../support_request/index.php?err=' . urlencode('Only the student can leave feedback.'));
+if (empty($_SESSION['user_id'])) {
+    header('Location: ../user_management/select_user.php');
     exit;
 }
 
@@ -15,7 +15,7 @@ $alreadyGiven = hasFeedback($conn, $sessionId);
 include __DIR__ . '/../../general/header.php';
 
 // Alternative course 9a: block feedback before the session is completed
-if (!$session || $session['student_id'] != $_SESSION['user_id']) {
+if (!$session || $session['user_id'] != $_SESSION['user_id']) {
     echo '<div class="message message-error">Session not found.</div>';
 } elseif ($session['status'] !== 'Completed') {
     echo '<h1>Feedback not available yet</h1>';
@@ -28,7 +28,7 @@ if (!$session || $session['student_id'] != $_SESSION['user_id']) {
 } else {
 ?>
     <h1>Rate your session</h1>
-    <p class="subtitle"><?php echo htmlspecialchars($session['subject']); ?> with <?php echo htmlspecialchars($session['volunteer_name']); ?></p>
+    <p class="subtitle"><?php echo htmlspecialchars($session['category']); ?> with <?php echo htmlspecialchars($session['volunteer_name']); ?></p>
 
     <?php if (isset($_GET['err'])): ?>
     <div class="message message-error"><?php echo htmlspecialchars($_GET['err']); ?></div>

@@ -1,7 +1,6 @@
 <?php
 require __DIR__ . '/../../general/config.php';
 require __DIR__ . '/../../general/user_profile.php';
-require __DIR__ . '/../../general/support_request.php';
 require __DIR__ . '/../../general/session.php';
 
 requireLogin();
@@ -11,7 +10,7 @@ $myId      = currentUser()['id'];
 
 $session = findScheduledSession($conn, $sessionId);
 
-if (!$session || ($session['student_id'] != $myId && $session['volunteer_id'] != $myId)) {
+if (!$session || ($session['user_id'] != $myId && $session['volunteer_id'] != $myId)) {
     header('Location: ../support_request/index.php?err=' . urlencode('This session cannot be cancelled.'));
     exit;
 }
@@ -19,10 +18,8 @@ if (!$session || ($session['student_id'] != $myId && $session['volunteer_id'] !=
 $conn->begin_transaction();
 try {
     updateSessionStatus($conn, $sessionId, 'Cancelled');
-    // A cancelled session goes back to Accepted so a new session can be booked
-    updateSupportRequestStatus($conn, (int)$session['request_id'], 'Accepted');
-    // Free the volunteer's time slot again
-    freeSlot($conn, (int)$session['volunteer_id'], $session['session_date'], $session['session_time']);
+    recordHistory($conn, $session, 'Cancelled');
+    // The volunteer's slot becomes free again automatically: no Scheduled session uses it now
 
     $conn->commit();
     // In a full system this is where the other participant would be notified (e.g. by email)
