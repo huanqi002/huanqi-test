@@ -8,7 +8,7 @@
 
 ## Data Requirements
 
-Uses the shared `support_requests`, `volunteer_availability`, `sessions`, and `users` tables. Scheduling creates a `sessions` row and marks the chosen slot booked; see [General requirements](../README.md) for the shared schema.
+Uses the shared `requests`, `volunteers`, `sessions`, and `users` tables. Scheduling creates a `sessions` row and marks the chosen slot booked; see [General requirements](../README.md) for the shared schema.
 
 ## Constraints and Assumptions
 

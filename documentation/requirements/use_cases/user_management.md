@@ -3,12 +3,12 @@
 ## Functional Requirements
 
 - The user can select a sample student or volunteer identity to sign in as.
-- The user can register a new sample identity (name, role, optional email) and be signed in as it.
+- The user can register a new sample identity (full name, email, university, password hash, volunteer flag) and be signed in as it.
 - The user can log out to switch to a different identity.
 
 ## Data Requirements
 
-Uses the shared `users` table (name, role, optional email). See [General requirements](../README.md) for the shared schema.
+Uses the shared `users` table (full name, email, university, password hash, volunteer flag). See [General requirements](../README.md) for the shared schema.
 
 ## Constraints and Assumptions
 

@@ -2,8 +2,8 @@
 require __DIR__ . '/../../general/config.php';
 require __DIR__ . '/../../general/session.php';
 
-if (empty($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
-    header('Location: ../support_request/index.php?err=' . urlencode('Only the student can leave feedback.'));
+if (empty($_SESSION['user_id'])) {
+    header('Location: ../user_management/select_user.php');
     exit;
 }
 
@@ -20,8 +20,9 @@ if ($rating < 1 || $rating > 5) {
 // Re-check the session belongs to this student and is completed (alt. course 9a)
 $session = findSessionForFeedback($conn, $sessionId);
 
-if (!$session || $session['student_id'] != $_SESSION['user_id']) {
-    header('Location: ../support_request/index.php?err=' . urlencode('Session not found.'));
+// Only the session's student can leave feedback
+if (!$session || $session['user_id'] != $_SESSION['user_id']) {
+    header('Location: ../support_request/index.php?err=' . urlencode('Only the student can leave feedback.'));
     exit;
 }
 if ($session['status'] !== 'Completed') {
@@ -34,9 +35,14 @@ if (hasFeedback($conn, $sessionId)) {
     exit;
 }
 
-if (insertFeedback($conn, $sessionId, $rating, $comments)) {
+$conn->begin_transaction();
+try {
+    $feedbackId = insertFeedback($conn, $session, $rating, $comments);
+    attachFeedbackToHistory($conn, $sessionId, $feedbackId);
+    $conn->commit();
     header('Location: ../support_request/index.php?msg=' . urlencode('Thank you! Your feedback has been saved.'));
-} else {
+} catch (Exception $e) {
+    $conn->rollback();
     header('Location: feedback.php?session_id=' . $sessionId . '&err=' . urlencode('Something went wrong. Please try again.'));
 }
 exit;

@@ -14,7 +14,9 @@ Campus-Connect/
 |       |-- support_request/      View accepted requests, schedule a session
 |       `-- session_history/      Cancel, complete, feedback, history
 |-- database/
-|   `-- general/schema.sql    Shared platform schema and sample data
+|   `-- general/
+|       |-- schema.sql        Shared platform schema (tables)
+|       `-- seed.sql          Sample data for local testing
 |-- documentation/
 |   |-- project-plan/
 |   |-- requirements/         General and per-use-case requirements
@@ -35,7 +37,7 @@ The current module lets students and volunteers schedule support sessions, manag
 1. Install XAMPP with Apache, PHP, and MySQL.
 2. Place or clone this repository inside XAMPP's `htdocs` directory.
 3. Start Apache and MySQL from the XAMPP Control Panel.
-4. Import [`database/general/schema.sql`](database/general/schema.sql) in phpMyAdmin. It creates the shared `support_system` database and sample records.
+4. In phpMyAdmin, import [`database/general/schema.sql`](database/general/schema.sql) to create the shared `support_system` database and its tables, then import [`database/general/seed.sql`](database/general/seed.sql) to load the sample records. Every sample account's password is `welcome@123`.
 5. If your local MySQL credentials differ from XAMPP defaults, copy `backend/general/config.local.example.php` to `backend/general/config.local.php` and update the local values there. The local file is ignored by Git; never commit production credentials.
 6. Open `http://localhost/Campus-Connect/backend/use_cases/user_management/select_user.php` in a browser. Adjust `Campus-Connect` in the URL if the repository folder has a different name under `htdocs`.
 

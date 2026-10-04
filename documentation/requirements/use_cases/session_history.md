@@ -9,7 +9,7 @@
 
 ## Data Requirements
 
-Uses the shared `sessions`, `support_requests`, `volunteer_availability`, and `feedback` tables; a unique session identifier in `feedback` limits each session to one feedback record. See [General requirements](../README.md) for the shared schema.
+Uses the shared `sessions`, `requests`, `volunteers`, and `feedbacks` tables; a unique session identifier in `feedbacks` limits each session to one feedback record. See [General requirements](../README.md) for the shared schema.
 
 ## Constraints and Assumptions
 

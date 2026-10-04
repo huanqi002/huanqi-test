@@ -2,7 +2,7 @@
 
 ## Local Setup
 
-Follow the XAMPP setup in the root [README](../../../README.md), then use the sample users and records loaded by [`database/general/schema.sql`](../../../database/general/schema.sql).
+Follow the XAMPP setup in the root [README](../../../README.md), then use the sample users and records loaded by [`database/general/seed.sql`](../../../database/general/seed.sql).
 
 ## Manual Smoke Tests
 
